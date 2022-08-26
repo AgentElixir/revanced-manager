@@ -1,5 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-import 'dart:convert';
 import 'dart:io';
 import 'package:app_installer/app_installer.dart';
 import 'package:device_apps/device_apps.dart';
@@ -14,12 +13,11 @@ import 'package:revanced_manager/models/patched_application.dart';
 import 'package:revanced_manager/services/manager_api.dart';
 import 'package:revanced_manager/services/patcher_api.dart';
 import 'package:revanced_manager/ui/views/patcher/patcher_viewmodel.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stacked/stacked.dart';
 
 @lazySingleton
 class HomeViewModel extends BaseViewModel {
-  final ManagerAPI _managerAPI = ManagerAPI();
+  final ManagerAPI _managerAPI = locator<ManagerAPI>();
   final PatcherAPI _patcherAPI = locator<PatcherAPI>();
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -49,11 +47,10 @@ class HomeViewModel extends BaseViewModel {
   }
 
   Future<List<PatchedApplication>> getPatchedApps(bool isUpdatable) async {
+    await _managerAPI.reAssessSavedApps();
     List<PatchedApplication> list = [];
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> patchedApps = prefs.getStringList('patchedApps') ?? [];
-    for (String str in patchedApps) {
-      PatchedApplication app = PatchedApplication.fromJson(json.decode(str));
+    List<PatchedApplication> patchedApps = _managerAPI.getPatchedApps();
+    for (PatchedApplication app in patchedApps) {
       bool hasUpdates = await _managerAPI.hasAppUpdates(app.packageName);
       if (hasUpdates == isUpdatable) {
         list.add(app);
@@ -68,9 +65,9 @@ class HomeViewModel extends BaseViewModel {
     if (latestVersion != null) {
       try {
         int latestVersionInt =
-            int.parse(latestVersion.replaceFirst('v', '').replaceAll('.', ''));
+            int.parse(latestVersion.replaceAll(RegExp('[^0-9]'), ''));
         int currentVersionInt =
-            int.parse(currentVersion.replaceFirst('v', '').replaceAll('.', ''));
+            int.parse(currentVersion.replaceAll(RegExp('[^0-9]'), ''));
         return latestVersionInt > currentVersionInt;
       } on Exception {
         return false;
