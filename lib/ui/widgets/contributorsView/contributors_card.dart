@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:github/github.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:revanced_manager/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ContributorsCard extends StatefulWidget {
@@ -24,7 +25,7 @@ class _ContributorsCardState extends State<ContributorsCard> {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4.0),
           child: Text(
@@ -39,8 +40,10 @@ class _ContributorsCardState extends State<ContributorsCard> {
           margin: const EdgeInsets.all(8.0),
           padding: const EdgeInsets.all(4.0),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.tertiary,
-            borderRadius: BorderRadius.circular(8.0),
+            color: isDark
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).navigationBarTheme.backgroundColor!,
+            borderRadius: BorderRadius.circular(12),
           ),
           height: widget.height,
           child: GridView.builder(

@@ -9,11 +9,10 @@ import 'package:revanced_manager/ui/widgets/shared/patch_text_button.dart';
 
 class LatestCommitCard extends StatefulWidget {
   final Function() onPressed;
-  final Color? color;
+
   const LatestCommitCard({
     Key? key,
     required this.onPressed,
-    this.color = const Color(0xff1B222B),
   }) : super(key: key);
 
   @override
@@ -28,17 +27,17 @@ class _LatestCommitCardState extends State<LatestCommitCard> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        color: widget.color,
+        color: Theme.of(context).colorScheme.primary,
       ),
       padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
+        children: <Widget>[
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: <Widget>[
               Row(
-                children: [
+                children: <Widget>[
                   I18nText(
                     'latestCommitCard.patcherLabel',
                     child: Text(
@@ -68,7 +67,7 @@ class _LatestCommitCardState extends State<LatestCommitCard> {
               ),
               const SizedBox(height: 8),
               Row(
-                children: [
+                children: <Widget>[
                   I18nText(
                     'latestCommitCard.managerLabel',
                     child: Text(

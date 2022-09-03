@@ -12,7 +12,7 @@ class ApplicationItem extends StatelessWidget {
   final Uint8List icon;
   final String name;
   final DateTime patchDate;
-  final String changelog;
+  final List<String> changelog;
   final bool isUpdatableApp;
   final Function() onPressed;
 
@@ -36,14 +36,12 @@ class ApplicationItem extends StatelessWidget {
       header: Container(
         height: 60,
         decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(
-            Radius.circular(16),
-          ),
+          borderRadius: BorderRadius.circular(12),
           color: Theme.of(context).colorScheme.primary,
         ),
         padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 12.0),
         child: Row(
-          children: [
+          children: <Widget>[
             SizedBox(
               width: 60,
               child: Image.memory(
@@ -57,7 +55,7 @@ class ApplicationItem extends StatelessWidget {
               width: MediaQuery.of(context).size.width - 250,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Text(
                     name,
                     style: GoogleFonts.roboto(
@@ -90,12 +88,12 @@ class ApplicationItem extends StatelessWidget {
           ],
         ),
       ),
-      collapsed: const Text(""),
+      collapsed: const Text(''),
       expanded: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             I18nText(
               'applicationItem.changelogLabel',
               child: Text(
@@ -103,8 +101,9 @@ class ApplicationItem extends StatelessWidget {
                 style: kRobotoTextStyle.copyWith(fontWeight: FontWeight.w700),
               ),
             ),
+            const SizedBox(height: 4),
             Text(
-              changelog,
+              '\u2022 ${changelog.join('\n\u2022 ')}',
               style: kRobotoTextStyle,
             ),
           ],

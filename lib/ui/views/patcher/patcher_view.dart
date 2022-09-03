@@ -3,9 +3,14 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:revanced_manager/app/app.locator.dart';
 import 'package:revanced_manager/theme.dart';
+import 'package:revanced_manager/ui/views/app_selector/app_selector_view.dart';
+import 'package:revanced_manager/ui/views/installer/installer_view.dart';
 import 'package:revanced_manager/ui/views/patcher/patcher_viewmodel.dart';
+import 'package:revanced_manager/ui/views/patches_selector/patches_selector_view.dart';
 import 'package:revanced_manager/ui/widgets/patcherView/app_selector_card.dart';
 import 'package:revanced_manager/ui/widgets/patcherView/patch_selector_card.dart';
+import 'package:revanced_manager/ui/widgets/shared/custom_sliver_app_bar.dart';
+import 'package:revanced_manager/ui/widgets/shared/open_container_wrapper.dart';
 import 'package:stacked/stacked.dart';
 
 class PatcherView extends StatelessWidget {
@@ -18,43 +23,31 @@ class PatcherView extends StatelessWidget {
       viewModelBuilder: () => locator<PatcherViewModel>(),
       builder: (context, model, child) => Scaffold(
         floatingActionButton: Visibility(
-          visible: model.showFabButton(),
-          child: FloatingActionButton.extended(
-            onPressed: () => model.navigateToInstaller(),
-            label: I18nText('patcherView.fabButton'),
-            icon: const Icon(Icons.build),
-            backgroundColor: Theme.of(context).colorScheme.secondary,
-            foregroundColor: Colors.white,
+          visible: model.showPatchButton(),
+          child: OpenContainerWrapper(
+            openBuilder: (_, __) => const InstallerView(),
+            closedBuilder: (_, openContainer) => FloatingActionButton.extended(
+              label: I18nText('patcherView.patchButton'),
+              icon: const Icon(Icons.build),
+              onPressed: openContainer,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              backgroundColor: Theme.of(context).colorScheme.secondary,
+              foregroundColor: Theme.of(context).colorScheme.surface,
+            ),
           ),
         ),
         body: CustomScrollView(
           slivers: <Widget>[
-            SliverAppBar(
-              pinned: true,
-              snap: false,
-              floating: false,
-              expandedHeight: 100.0,
-              automaticallyImplyLeading: false,
-              backgroundColor: MaterialStateColor.resolveWith(
-                (states) => states.contains(MaterialState.scrolledUnder)
-                    ? isDark
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).navigationBarTheme.backgroundColor!
-                    : Theme.of(context).scaffoldBackgroundColor,
-              ),
-              flexibleSpace: FlexibleSpaceBar(
-                titlePadding: const EdgeInsets.symmetric(
-                  vertical: 23.0,
-                  horizontal: 20.0,
-                ),
-                title: I18nText(
-                  'patcherView.widgetTitle',
-                  child: Text(
-                    '',
-                    style: GoogleFonts.inter(
-                      color: Theme.of(context).textTheme.headline5!.color,
-                      fontWeight: FontWeight.w500,
-                    ),
+            CustomSliverAppBar(
+              title: I18nText(
+                'patcherView.widgetTitle',
+                child: Text(
+                  '',
+                  style: GoogleFonts.inter(
+                    color: Theme.of(context).textTheme.headline5!.color,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
@@ -64,20 +57,23 @@ class PatcherView extends StatelessWidget {
               sliver: SliverList(
                 delegate: SliverChildListDelegate.fixed(
                   <Widget>[
-                    AppSelectorCard(
-                      onPressed: model.navigateToAppSelector,
-                      color: Theme.of(context).colorScheme.primary,
+                    OpenContainerWrapper(
+                      openBuilder: (_, __) => const AppSelectorView(),
+                      closedBuilder: (_, openContainer) => AppSelectorCard(
+                        onPressed: openContainer,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     Opacity(
                       opacity: isDark
                           ? (model.dimPatchesCard() ? 0.5 : 1)
                           : (model.dimPatchesCard() ? 0.75 : 1),
-                      child: PatchSelectorCard(
-                        onPressed: model.dimPatchesCard()
-                            ? () => {}
-                            : model.navigateToPatchesSelector,
-                        color: Theme.of(context).colorScheme.primary,
+                      child: OpenContainerWrapper(
+                        openBuilder: (_, __) => const PatchesSelectorView(),
+                        closedBuilder: (_, openContainer) => PatchSelectorCard(
+                          onPressed:
+                              model.dimPatchesCard() ? () => {} : openContainer,
+                        ),
                       ),
                     ),
                   ],

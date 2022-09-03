@@ -3,7 +3,8 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:revanced_manager/theme.dart';
 import 'package:revanced_manager/ui/widgets/appSelectorView/installed_app_item.dart';
 import 'package:revanced_manager/ui/widgets/shared/search_bar.dart';
-import 'package:stacked/stacked.dart';
+import 'package:revanced_manager/ui/widgets/appSelectorView/app_skeleton_loader.dart';
+import 'package:stacked/stacked.dart' hide SkeletonLoader;
 import 'package:revanced_manager/ui/views/app_selector/app_selector_viewmodel.dart';
 
 class AppSelectorView extends StatefulWidget {
@@ -23,14 +24,17 @@ class _AppSelectorViewState extends State<AppSelectorView> {
       viewModelBuilder: () => AppSelectorViewModel(),
       builder: (context, model, child) => Scaffold(
         floatingActionButton: FloatingActionButton.extended(
+          label: I18nText('appSelectorView.storageButton'),
+          icon: const Icon(Icons.sd_storage),
           onPressed: () {
             model.selectAppFromStorage(context);
             Navigator.of(context).pop();
           },
-          label: I18nText('appSelectorView.fabButton'),
-          icon: const Icon(Icons.sd_storage),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           backgroundColor: Theme.of(context).colorScheme.secondary,
-          foregroundColor: Colors.white,
+          foregroundColor: Theme.of(context).colorScheme.surface,
         ),
         body: SafeArea(
           child: Padding(
@@ -41,13 +45,9 @@ class _AppSelectorViewState extends State<AppSelectorView> {
                     child: I18nText('appSelectorCard.noAppsLabel'),
                   )
                 : model.apps.isEmpty
-                    ? Center(
-                        child: CircularProgressIndicator(
-                          color: Theme.of(context).colorScheme.secondary,
-                        ),
-                      )
+                    ? const AppSkeletonLoader()
                     : Column(
-                        children: [
+                        children: <Widget>[
                           SearchBar(
                             showSelectIcon: false,
                             fillColor: isDark
@@ -68,6 +68,7 @@ class _AppSelectorViewState extends State<AppSelectorView> {
                           const SizedBox(height: 12),
                           Expanded(
                             child: ListView(
+                              padding: const EdgeInsets.only(bottom: 80),
                               children: model
                                   .getFilteredApps(_query)
                                   .map((app) => InkWell(

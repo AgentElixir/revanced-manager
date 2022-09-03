@@ -8,6 +8,7 @@ import 'package:revanced_manager/ui/widgets/homeView/available_updates_card.dart
 import 'package:revanced_manager/ui/widgets/homeView/dashboard_raw_chip.dart';
 import 'package:revanced_manager/ui/widgets/homeView/installed_apps_card.dart';
 import 'package:revanced_manager/ui/widgets/homeView/latest_commit_card.dart';
+import 'package:revanced_manager/ui/widgets/shared/custom_sliver_app_bar.dart';
 import 'package:stacked/stacked.dart';
 
 class HomeView extends StatelessWidget {
@@ -17,38 +18,19 @@ class HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewModelBuilder<HomeViewModel>.reactive(
       disposeViewModel: false,
-      fireOnModelReadyOnce: true,
       onModelReady: (model) => model.initialize(),
       viewModelBuilder: () => locator<HomeViewModel>(),
       builder: (context, model, child) => Scaffold(
         body: CustomScrollView(
           slivers: <Widget>[
-            SliverAppBar(
-              pinned: true,
-              snap: false,
-              floating: false,
-              expandedHeight: 100.0,
-              automaticallyImplyLeading: false,
-              backgroundColor: MaterialStateColor.resolveWith(
-                (states) => states.contains(MaterialState.scrolledUnder)
-                    ? isDark
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).navigationBarTheme.backgroundColor!
-                    : Theme.of(context).scaffoldBackgroundColor,
-              ),
-              flexibleSpace: FlexibleSpaceBar(
-                titlePadding: const EdgeInsets.symmetric(
-                  vertical: 23.0,
-                  horizontal: 20.0,
-                ),
-                title: I18nText(
-                  'homeView.widgetTitle',
-                  child: Text(
-                    '',
-                    style: GoogleFonts.inter(
-                      color: Theme.of(context).textTheme.headline5!.color,
-                      fontWeight: FontWeight.w500,
-                    ),
+            CustomSliverAppBar(
+              title: I18nText(
+                'homeView.widgetTitle',
+                child: Text(
+                  '',
+                  style: GoogleFonts.inter(
+                    color: Theme.of(context).textTheme.headline5!.color,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
@@ -74,7 +56,6 @@ class HomeView extends StatelessWidget {
                     const SizedBox(height: 10),
                     LatestCommitCard(
                       onPressed: () => model.updateManager(context),
-                      color: Theme.of(context).colorScheme.primary,
                     ),
                     const SizedBox(height: 23),
                     I18nText(
@@ -91,9 +72,9 @@ class HomeView extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Row(
-                      children: [
+                      children: <Widget>[
                         DashboardChip(
-                          label: "homeView.updatesAvailable",
+                          label: I18nText('homeView.updatesAvailable'),
                           isSelected: model.showUpdatableApps,
                           onSelected: (value) {
                             model.toggleUpdatableApps(true);
@@ -101,7 +82,7 @@ class HomeView extends StatelessWidget {
                         ),
                         const SizedBox(width: 10),
                         DashboardChip(
-                          label: "homeView.installed",
+                          label: I18nText('homeView.installed'),
                           isSelected: !model.showUpdatableApps,
                           onSelected: (value) {
                             model.toggleUpdatableApps(false);
@@ -112,7 +93,7 @@ class HomeView extends StatelessWidget {
                     const SizedBox(height: 14),
                     model.showUpdatableApps
                         ? AvailableUpdatesCard()
-                        : InstalledAppsCard()
+                        : InstalledAppsCard(),
                   ],
                 ),
               ),
